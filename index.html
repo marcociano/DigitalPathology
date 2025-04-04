@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DP Viewer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.0.0/openseadragon.min.js"></script>
+    <script src="/static/js/openseadragon-scalebar.js"></script>
+
+    <style>
+        #openseadragon {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #000;
+            position: relative;
+        }
+
+        #scale-bar {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Digital Pathology Viewer</h1>
+
+<div id="openseadragon"></div>
+<div id="screenshot-controls">
+    <input type="text" id="screenshot-name" placeholder="Enter file name">
+    <button id="screenshot-button">Take Screenshot</button>
+</div>
+<div id="screenshot-message"></div>
+<button onclick="toggleEdgeLayer()" id="edges_button">Extract Edges</button>
+<script>
+    const viewer = OpenSeadragon({
+        id: "openseadragon",
+        prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/4.0.0/images/",
+        tileSources:[
+            { tileSource: "/dzi_output/Mirax2.2-4-PNG.dzi", opacity: 1, id: "original" },
+            { tileSource: "/dzi_output/Mirax2.2-4-PNG_edges.dzi", opacity: 0, id: "edges" }
+        ],
+        showNavigator: true,
+        navigatorPosition: "TOP_RIGHT",
+        navigatorSizeRatio: 0.1,
+    });
+
+viewer.scalebar({
+    type: OpenSeadragon.ScalebarType.MICRON,
+    pixelsPerMeter: 1000000 / {{ microns_x | default(0.25) }},  // µm to m conversion
+    minWidth: "75px",
+    location: OpenSeadragon.ScalebarLocation.BOTTOM_RIGHT,
+    xOffset: 10,
+    yOffset: 10,
+    stayInsideImage: true,
+    color: "black",
+    fontColor: "black",
+    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    barThickness: 4,
+});
+</script>
+
+<script src="/static/js/screenshot_script.js"></script>
+<script src="/static/js/laplacianSharpness_script.js"></script>
+<script src="/static/js/edge_detection.js"></script>
+<link rel="stylesheet" href="/static/css/edges_stylesheet.css">
+<link rel="stylesheet" href="/static/css/screenshot_stylesheet.css">
+<link rel="stylesheet" href="/static/css/scalebar_stylesheet.css">
+<link rel="stylesheet" href="/static/css/sharpnessInfo_stylesheet.css">
+</body>
+</html>
